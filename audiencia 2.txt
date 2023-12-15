@@ -1,0 +1,7 @@
+SELECT 
+  user_pseudo_id
+FROM
+      `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+    WHERE
+      _TABLE_SUFFIX BETWEEN '20201201' AND '20201231'
+       AND geo.city = "New York" AND device.category = "mobile";
