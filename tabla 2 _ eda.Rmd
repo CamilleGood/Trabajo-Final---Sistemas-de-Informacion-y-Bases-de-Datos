@@ -1,0 +1,68 @@
+---
+title: "tabla 2 - EDA"
+output: html_document
+date: "2023-12-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tabla 2 EDA
+```{r}
+#Librerias
+library(tidyverse)
+library(readxl)
+library(ggplot2)
+```
+
+```{r}
+ruta_csv_2 <- "~/tp_sistemas de info y bases de datos/tabla_2.xlsx"
+tabla_2 <- read_excel(ruta_csv_2,)
+head(tabla_2)
+```
+
+```{r}
+# Campos disponibles en el dataset
+colnames(tabla_2)
+```
+```{r}
+# Calcular los totales de cada evento ecommerce
+totales_eventos <- colSums(tabla_2[, -1], na.rm = TRUE)
+totales_eventos
+
+```
+
+```{r}
+# Funnel de compra, comportamiento de los usuarios al realizar una compra en el sitio
+#Paso 1: add_to_cart, Paso 2: checkout, Paso 3: add_shipping_info, Paso 4: add_payment_info, Paso 5: purchase
+#Creo una tabla con los eventos 
+eventos_ecommerce <- tabla_2 %>%
+  select(user_pseudo_id, add_to_cart, checkouts, add_shipping_info, add_payment_info, purchases) %>%
+  summarise(
+    add_to_cart = sum(add_to_cart),
+    checkout = sum(checkouts),
+    add_shipping_info = sum(add_shipping_info),
+    add_payment_info = sum(add_payment_info),
+    purchase = sum(purchases)
+  )%>%
+  pivot_longer(cols = c(add_to_cart, checkout, add_shipping_info, add_payment_info, purchase), names_to = "evento", values_to = "cantidad")
+ 
+#orden de los eventos
+orden_eventos <- c( "purchase","add_payment_info", "add_shipping_info","checkout", "add_to_cart")
+eventos_ecommerce$evento <- factor(eventos_ecommerce$evento, levels = orden_eventos)
+
+#eventos_ecommerce <- eventos_ecommerce[order(-eventos_ecommerce$cantidad), ]
+
+# Grafico del funnel de compra
+
+ggplot(eventos_ecommerce, aes(x = evento, y = cantidad, fill = evento)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Funnel de Compra",
+       x = "Acciones",
+       y = "Cantidad de Usuarios") +
+  theme_minimal()
+
+```
+
