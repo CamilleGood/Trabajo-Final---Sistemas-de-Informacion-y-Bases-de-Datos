@@ -1,0 +1,78 @@
+SELECT
+  user_pseudo_id,
+  SUM(promotion_clicks) AS promotion_clicks,
+  SUM(item_view_events) AS item_view_events,
+  SUM(add_shipping_info) AS add_shipping_info,
+  SUM(add_payment_info) AS add_payment_info,
+  SUM(checkouts) AS checkouts,
+  SUM(add_to_wishlist) AS add_to_wishlist,
+  SUM(add_to_cart) AS add_to_cart,
+  SUM(view_cart) AS view_cart,
+  SUM(purchases) AS purchases
+FROM
+  (
+    SELECT
+      user_pseudo_id,
+      SUM(
+        CASE
+          WHEN event_name = 'select_promotion' THEN 1
+          ELSE 0
+        END
+      ) AS promotion_clicks,
+      SUM(
+        CASE
+          WHEN event_name = 'view_item' THEN 1
+          ELSE 0
+        END
+      ) AS item_view_events,
+      SUM(
+        CASE
+          WHEN event_name = 'add_shipping_info' THEN 1
+          ELSE 0
+        END
+      ) AS add_shipping_info,
+      SUM(
+        CASE
+          WHEN event_name = 'add_payment_info' THEN 1
+          ELSE 0
+        END
+      ) AS add_payment_info,
+      SUM(
+        CASE
+          WHEN event_name = 'begin_checkout' THEN 1
+          ELSE 0
+        END
+      ) AS checkouts,
+      SUM(
+        CASE
+          WHEN event_name = 'add_to_wishlist' THEN 1
+          ELSE 0
+        END
+      ) AS add_to_wishlist,
+      SUM(
+        CASE
+          WHEN event_name = 'add_to_cart' THEN 1
+          ELSE 0
+        END
+      ) AS add_to_cart,
+      SUM(
+        CASE
+          WHEN event_name = 'view_cart' THEN 1
+          ELSE 0
+        END
+      ) AS view_cart,
+      SUM(
+        CASE
+          WHEN event_name = 'purchase' THEN 1
+          ELSE 0
+        END
+      ) AS purchases
+    FROM
+      `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+    WHERE
+      _TABLE_SUFFIX BETWEEN '20201201' AND '20201231'
+    GROUP BY
+      user_pseudo_id
+  )
+GROUP BY
+  user_pseudo_id
