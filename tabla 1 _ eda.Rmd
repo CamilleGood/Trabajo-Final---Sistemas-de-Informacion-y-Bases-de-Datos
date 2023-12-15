@@ -1,0 +1,123 @@
+---
+title: "tp - sistemas"
+output: html_document
+date: "2023-12-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Tabla 1 EDA
+```{r message=FALSE, warning=FALSE}
+#Librerias
+library(tidyverse)
+library(readxl)
+```
+```{r}
+# Abrir csv de Usuarios
+ruta_csv_1 <- "~/tp_sistemas de info y bases de datos/usuarios_1_tablabq.xlsx"
+tabla_1 <- read_excel(ruta_csv_1,)
+head(tabla_1)
+
+```
+
+```{r}
+# Campos disponibles en el dataset
+colnames(tabla_1)
+```
+
+```{r}
+# Cantidad de usuarios en el dataset
+usuarios_unicos <-unique(tabla_1[["user_pseudo_id"]])
+cat("Cantidad de usuarios:", length(usuarios_unicos), "\n")
+```
+```{r}
+# Cantidad de usuarios por país, región y ciudad
+usuarios_por_pais <- tabla_1 %>% 
+  group_by(country) %>% 
+  summarise(cantidad = n_distinct(user_pseudo_id)) %>% 
+  arrange(desc(cantidad))
+
+usuarios_por_pais
+```
+```{r}
+usuarios_por_region <- tabla_1 %>%
+  group_by(region) %>% 
+  summarise(cantidad = n_distinct(user_pseudo_id)) %>% 
+  arrange(desc(cantidad))
+usuarios_por_region
+```
+```{r}
+usuarios_por_ciudad <- tabla_1 %>% 
+  group_by(city) %>% 
+  summarise(cantidad = n_distinct(user_pseudo_id))%>% 
+  arrange(desc(cantidad))
+usuarios_por_ciudad
+```
+
+
+```{r}
+# Cantidad de usuarios por categoria de dispositivo
+usuarios_por_dv <- tabla_1 %>%
+  group_by(device_category) %>% 
+  summarise(cantidad = n_distinct(user_pseudo_id))
+usuarios_por_dv
+```
+
+```{r}
+# Cantidad de usuarios por sistema operativo
+usuarios_por_so <- tabla_1 %>%
+  group_by(operating_system) %>% summarise(cantidad = n_distinct(user_pseudo_id)) %>% 
+  arrange(desc(cantidad))
+usuarios_por_so
+```
+
+```{r}
+#Exploración eventos por usuario
+hist(log(tabla_1$events_per_user), 
+     col = "skyblue",      # Color de las barras
+     main = "Distribución logarítmica de events_per_user",  # Título del gráfico
+     xlab = "Log(Events per User)",  # Etiqueta del eje x
+     ylab = "Frecuencia")      
+```
+```{r}
+# Calculo máximo, mínimo, media, varianza y desvio estándar de los eventos por usuario
+maximo <- max(tabla_1$events_per_user)
+minimo <- min(tabla_1$events_per_user)
+media <- mean(tabla_1$events_per_user)
+varianza <- var(tabla_1$events_per_user)
+desvio_estandar <- sd(tabla_1$events_per_user)
+
+# resultados
+cat("Máximo:", maximo, "\n")
+cat("Mínimo:", minimo, "\n")
+cat("Media:", media, "\n")
+cat("Varianza:", varianza, "\n")
+cat("Desviación estándar:", desvio_estandar, "\n")
+```
+```{r}
+#Exploración sesiones por usuario
+hist(tabla_1$sessions_per_user, 
+     col = "skyblue",      
+     main = "Distribución de sessions_per_user",  
+     xlab = "Sessions per User",  
+     ylab = "Frecuencia")  
+```
+```{r}
+# Calculo máximo, mínimo, media, varianza y desvio estándar de las sesiones por usuario
+maximo <- max(tabla_1$sessions_per_user)
+minimo <- min(tabla_1$sessions_per_user)
+media <- mean(tabla_1$sessions_per_user)
+varianza <- var(tabla_1$sessions_per_user)
+desvio_estandar <- sd(tabla_1$sessions_per_user)
+
+#resultados
+cat("Máximo:", maximo, "\n")
+cat("Mínimo:", minimo, "\n")
+cat("Media:", media, "\n")
+cat("Varianza:", varianza, "\n")
+cat("Desvio estándar:", desvio_estandar, "\n")
+```
+ 
+
